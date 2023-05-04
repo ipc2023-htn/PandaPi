@@ -1,0 +1,171 @@
+OPTS(3)
+=======
+:doctype: manpage
+
+
+NAME
+----
+opts, optsAdd, optsAddDesc, optsClear, optsPrint - Parses program options
+
+
+SYNOPSIS
+--------
+#include <opts.h>
+
+int opts(int *argc, char **argv);
+
+int optsAdd(const char *long_name, char short_name,
+            uint32_t type, void *set, void (*callback)(void));
+
+int optsAddDesc(const char *long_name, char short_name,
+                uint32_t type, void *set, void (*callback)(void),
+                const char *desc);
+
+void optsClear(void);
+
+void optsPrint(FILE *out, const char *lineprefix);
+
+
+DESCRIPTION
+-----------
+The _optsAdd()_ function adds a description of an option that ought to be
+parsed.
+The arguments are:
+
+- The _long_name_ argument is string used as a long version of option's name
+(e.g., if _long_name_ equals to 'arg', the option name will be --arg).
+The _long_name_ can be omitted by setting to NULL.
+
+- The _short_name_ argument is a character used as a short version of
+option's name (e.g., if _short_name_ is 'a', the option name will be -a)
+and can be omitted by setting to zero (0x0).
+
+- The _type_ argument must be one of the OPTS_* types. For full list of
+available types see TYPES section.
+
+- If the _set_ argument is set to non-NULL value it will be used as
+destination pointer where the parsed value(s) will be stored.
+
+- If the _callback_ argument is set to non-NULL value (by _OPTS_CB()_
+macro), it will be used as callback in case the values were successfuly
+parsed.
+
+
+The _optsAddDesc()_ function is similar to _optsAdd()_ function but has
+one additional parameter _desc_ that can be used for setting a description
+of the option.
+This description will be printed out by _optsPrint()_ function.
+
+
+The _opts()_ function performs the parsing task on the given arguments
+according to previously added options (see _optsAdd()_ and _optsAddDesc()_
+functions).
+The both given arguments are modified so that _argc_ will hold the number
+of remaining unrecognized options and _argv_[0] trough _argv_[_argc_ - 1]
+will contain the remaining options.
+
+
+The _optsClear()_ function frees all allocated memory.
+
+
+The _optsPrint()_ function prints formated options as specified by
+_optsAdd()_ or _optsAddDesc()_ functions.
+
+
+TYPES
+~~~~~
+This section contains a list of all available types of options that can be
+used. Each type specifies the type of the option (the _set_ parameter of
+_optsAdd()_ function) and the type of the callback function (the _callback_
+parameter of _optsAdd()_ function).
+
+- _OPTS_NONE_ is the only option that does not require any argument
+  * _set_ must be [int*] and it is set to 1 if the option was found and to
+0 if it was not.
+  * _callback_ must be [void (*)(const char *longname, char shortname)].
+
+- OPTS_LONG
+  * _set_ - [long *]
+  * _callback_ - [void (*)(const char *l, char s, long val)]
+
+- OPTS_INT
+  * _set_ - [int *]
+  * _callback_ - [void (*)(const char *l, char s, int val)]
+
+- OPTS_SIZE_T
+  * _set_ - [size_t *]
+  * _callback_ - [void (*)(const char *l, char s, size_t val)]
+
+- OPTS_FLOAT
+  * _set_ - [float *]
+  * _callback_ - [void (*)(const char *l, char s, float val)]
+
+- OPTS_DOUBLE
+  * _set_ - [double *]
+  * _callback_ - [void (*)(const char *l, char s, double val)]
+
+- OPTS_STR
+  * _set_ - [const char **], note that only the original string pointer
+from _argv_ argument is stored there.
+  * _callback_ - [void (*)(const char *l, char s, const char *)]
+
+- OPTS_LONG_ARR(len) The array type requires that the option's value will
+consist of at least _len_ elements delimited by ',' or by ';'.
+The passed _set_ argument must have at least _len_ elements.
+The _callback_ argument can be set only in combination with the _set_
+argument because the opts library does not use any internal buffer for
+arrays.
+  * _set_ - [long *]
+  * _callback_ - [void (*)(const char *l, char s, const long *)]
+
+- OPTS_INT_ARR(len)
+  * _set_ - [int *]
+  * _callback_ - [void (*)(const char *l, char s, const int *)]
+
+- OPTS_SIZE_T_ARR(len)
+  * _set_ - [size_t *]
+  * _callback_ - [void (*)(const char *l, char s, const size_t *)]
+
+- OPTS_FLOAT_ARR(len)
+  * _set_ - [float *]
+  * _callback_ - [void (*)(const char *l, char s, const float *)]
+
+- OPTS_DOUBLE_ARR(len)
+  * _set_ - [double *]
+  * _callback_ - [void (*)(const char *l, char s, const double *)]
+
+
+
+RETURN VALUE
+------------
+The functions optsAdd() and optsAddDesc() returns a non-zer value (in fact
+ID of the added option) on success.
+
+The opts() function returns 0 if all options were successfuly parsed.
+If they were not, negative value is returned and errors are printed to
+stderr.
+
+
+EXAMPLE
+-------
+[source,c]
+----
+include::test2.c[]
+----
+
+
+SEE ALSO
+--------
+opts(3), optsAdd(3), optsAddDesc(3), optsClear(3), optsPrint(3)
+
+
+AUTHOR
+------
+Daniel Fiser <danfis@danfis.cz>.
+
+
+COPYING
+-------
+Copyright \(C) 2012 Daniel Fiser <danfis@danfis.cz>.
+Distributed under the OSI-approved BSD License.
+

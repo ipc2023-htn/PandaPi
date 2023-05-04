@@ -1,0 +1,82 @@
+###
+# opts
+# -----
+# Copyright (c)2010-2012 Daniel Fiser <danfis@danfis.cz>
+#
+#  This file is part of opts.
+#
+#  Distributed under the OSI-approved BSD License (the "License");
+#  see accompanying file BDS-LICENSE for details or see
+#  <http://www.opensource.org/licenses/bsd-license.php>.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even the
+#  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#  See the License for more information.
+##
+
+CC ?= gcc
+SH ?= sh
+SCAN_BUILD ?= scan-build
+GZIP = gzip
+A2X ?= a2x
+
+CC_NOT_GCC = no
+
+SYSTEM = $(shell uname)
+
+SYSTEM_LDFLAGS =
+CONFIG_FLAGS =
+
+ifeq '$(SYSTEM)' 'FreeBSD'
+  SED ?= gsed
+else
+endif
+
+NOWALL ?= no
+NOPEDANTIC ?= no
+DEBUG ?= no
+PROFIL ?= no
+
+ifeq '$(CC_NOT_GCC)' 'yes'
+  NOPEDANTIC := yes
+endif
+
+ifeq '$(PROFIL)' 'yes'
+  DEBUG = yes
+endif
+
+ifeq '$(DEBUG)' 'yes'
+  CFLAGS = -g
+  CONFIG_FLAGS += -DDEBUG
+else
+  # force to use optimizations
+  CFLAGS += -O3
+endif
+ifeq '$(PROFIL)' 'yes'
+  CFLAGS += -pg
+endif
+
+ifneq '$(NOWALL)' 'yes'
+  CFLAGS += -Wall
+  ifeq '$(DEBUG)' 'yes'
+    CFLAGS   += -Wno-unused-function
+  endif
+endif
+ifneq '$(NOPEDANTIC)' 'yes'
+  CFLAGS += -pedantic
+endif
+
+
+ifneq '$(CC_NOT_GCC)' 'yes'
+  CFLAGS += -std=gnu99 -ffast-math
+endif
+LDFLAGS +=
+LDFLAGS += $(SYSTEM_LDFLAGS)
+
+
+PREFIX     ?= /usr/local
+INCLUDEDIR ?= include
+LIBDIR     ?= lib
+MANDIR     ?= man/man3
+
+.DEFAULT_GOAL := all

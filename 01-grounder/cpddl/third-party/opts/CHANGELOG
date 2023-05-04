@@ -1,0 +1,4 @@
+opts v0.2, Daniel Fiser <danfis@danfis.cz>, 2012-09-12
+
+  * Improved printing of list of options.
+  * Added support for building debian packages.
