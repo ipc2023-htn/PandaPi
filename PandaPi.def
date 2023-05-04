@@ -21,11 +21,33 @@ From: ubuntu:22.04
 	
 	## Install all necessary dependencies.
 	apt-get update
-	apt-get -y install make g++
+	apt-get -y install make g++ bison cmake gengetopt flex unzip patch
 	
 	## go to directory and make the planner
 	cd /planner
-	
+	cd 00-parser/
+	make
+	mv pandaPIparser ..
+	cd ..
+
+	cd 01-grounder
+	cd cpddl
+	make boruvka opts bliss lpsolve
+	make
+	cd ../src
+	make
+	cd ..
+	mv pandaPIgrounder ..
+	cd ..
+
+	cd 02-planner/src
+	mkdir bin
+	cd bin
+	cmake ..
+	make
+	mv pandaPIengine ..
+	cd ..
+
 	## remove files not needed to execute the planner
 
 %runscript
@@ -33,19 +55,35 @@ From: ubuntu:22.04
 	## an instance.
 	
 	## DOMAINFILE and PROBLEMFILE contain the HDDL input files.
-	DOMAINFILE=$1
-	PROBLEMFILE=$2
+	## DOMAINFILE=$1
+	## PROBLEMFILE=$2
 	## PLANFILE is the name of the file to which your planner should write the plan it found.
-	PLANFILE=$3
+	## PLANFILE=$3
 
 	## run your planner here
+	pandaPIparser $1 $2 temp.parsed
+	if [ ! -f temp.parsed ]; then
+		echo "Parsing failed."
+		exit 101
+	fi
+
+	pandaPIgrounder -q -i temp.parsed "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas"
+	# ./pandaPIgrounder -q -DE temp.parsed "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas"
+	rm temp.parsed
+	if [ ! -f "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" ]; then
+		echo "Grounding failed."
+		exit 102
+	fi
+
+	pandaPIengine "--heuristic=lama(lazy=false;ha=false;lm=lmc;useLMOrd=false;h=add;search=gbfs)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" &> $3
+
 
 ## Update the following fields with meta data about your submission.
 ## Please use the same field names and use only one line for each value.
 %labels
-Name        PandaPi
-Description 
-Authors     
-SupportsRecursion 
-SupportsPartialOrder 
-SupportsOptimalPlanning 
+Name        PANDApro λ TO
+Description PANDA λ system using progression search with GBFS, rcAdd, and lmc
+Authors     Daniel Höller
+SupportsRecursion yes
+SupportsPartialOrder yes
+SupportsOptimalPlanning no
