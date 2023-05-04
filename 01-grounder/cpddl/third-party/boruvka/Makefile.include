@@ -1,0 +1,188 @@
+###
+# Boruvka
+# --------
+# Copyright (c)2010-2011 Daniel Fiser <danfis@danfis.cz>
+#
+#  This file is part of Boruvka.
+#
+#  Distributed under the OSI-approved BSD License (the "License");
+#  see accompanying file BDS-LICENSE for details or see
+#  <http://www.opensource.org/licenses/bsd-license.php>.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even the
+#  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#  See the License for more information.
+##
+
+CC ?= gcc
+CXX ?= g++
+SED ?= sed
+BASH ?= bash
+PYTHON ?= python
+PYTHON2 ?= python2
+PYTHON3 ?= python3
+CYTHON  ?= cython
+SCAN_BUILD ?= scan-build
+
+PYTHON_CONFIG ?= python-config
+
+CC_NOT_GCC = no
+
+SYSTEM = $(shell uname)
+
+SYSTEM_CXXFLAGS =
+SYSTEM_LDFLAGS =
+
+ifeq '$(SYSTEM)' 'FreeBSD'
+  SYSTEM_CXXFLAGS = -Wno-long-long
+  SED ?= gsed
+else
+endif
+
+NOWALL ?= no
+NOPEDANTIC ?= no
+DEBUG ?= no
+PROFIL ?= no
+
+ifeq '$(CC_NOT_GCC)' 'yes'
+  NOPEDANTIC := yes
+endif
+
+ifeq '$(PROFIL)' 'yes'
+  DEBUG = yes
+endif
+
+ifeq '$(DEBUG)' 'yes'
+  CFLAGS = -g
+  CXXFLAGS = -g
+else
+  # force to use optimizations
+  CFLAGS += -O3
+  CXXFLAGS += -O3
+endif
+ifeq '$(PROFIL)' 'yes'
+  CFLAGS += -pg
+  CXXFLAGS += -pg
+endif
+
+ifneq '$(NOWALL)' 'yes'
+  CFLAGS += -Wall
+  CXXFLAGS += -Wall
+endif
+ifneq '$(NOPEDANTIC)' 'yes'
+  CFLAGS += -pedantic
+  CXXFLAGS += -pedantic
+endif
+
+ifeq '$(USE_SINGLE)' ''
+ifeq '$(USE_DOUBLE)' ''
+  USE_DOUBLE ?= no
+  USE_SINGLE ?= yes
+endif
+endif
+
+USE_MEMCHECK ?= no
+MEMCHECK_REPORT_THRESHOLD ?= 1048576
+
+USE_SSE    ?= no
+USE_OPENCL ?= auto
+USE_HDF5   ?= auto
+USE_GSL    ?= auto
+USE_TIMSORT ?= yes
+
+
+ifeq '$(USE_SINGLE)' 'yes'
+  USE_DOUBLE = no
+endif
+ifeq '$(USE_DOUBLE)' 'yes'
+  USE_OPENCL := no
+endif
+ifeq '$(USE_SSE)' 'yes'
+  CFLAGS += -msse3
+  CXXFLAGS += -msse3
+endif
+
+
+ifeq '$(USE_OPENCL)' 'auto'
+  ifeq '$(OPENCL_CFLAGS)' ''
+    USE_OPENCL = $(shell if test -f /usr/lib/libOpenCL.so; then echo "yes"; else echo "no"; fi;)
+  else
+    USE_OPENCL = yes
+  endif
+endif
+
+ifeq '$(USE_OPENCL)' 'yes'
+  OPENCL_CFLAGS  ?=
+  OPENCL_LDFLAGS ?= -lOpenCL
+endif
+
+ifeq '$(USE_HDF5)' 'auto'
+  ifeq '$(HDF5_CFLAGS)' ''
+    USE_HDF5 = $(shell if test -f /usr/include/hdf5.h; then echo "yes"; else echo "no"; fi;)
+  else
+    USE_HDF5 = yes
+  endif
+endif
+
+ifeq '$(USE_HDF5)' 'yes'
+  HDF5_CFLAGS ?=
+  HDF5_LDFLAGS ?= -lhdf5
+endif
+
+
+ifeq '$(USE_GSL)' 'auto'
+  ifeq '$(GSL_CFLAGS)' ''
+    USE_GSL = $(shell if pkg-config --exists gsl; then echo "yes"; else echo "no"; fi;)
+  else
+    USE_GSL = yes
+  endif
+endif
+
+ifeq '$(USE_GSL)' 'yes'
+  GSL_CFLAGS ?= $(shell pkg-config --cflags gsl)
+  GSL_LDFLAGS ?= $(shell pkg-config --libs gsl)
+endif
+
+BINS     ?= yes
+DYNAMIC  ?= no
+
+ifneq '$(CC_NOT_GCC)' 'yes'
+  CFLAGS += -std=gnu99 -ffast-math
+endif
+LDFLAGS += -pthread
+LDFLAGS += $(SYSTEM_LDFLAGS)
+
+
+PYTHON_CFLAGS  ?= $(shell $(PYTHON_CONFIG) --includes)
+PYTHON_LDFLAGS ?= $(shell $(PYTHON_CONFIG) --libs)
+
+
+CPLEX_CFLAGS ?=
+CPLEX_LDFLAGS ?=
+ifneq '$(CPLEX_CFLAGS)$(CPLEX_LDFLAGS)' ''
+  USE_CPLEX := yes
+endif
+
+GUROBI_CFLAGS ?=
+GUROBI_LDFLAGS ?=
+ifneq '$(GUROBI_CFLAGS)$(GUROBI_LDFLAGS)' ''
+  USE_GUROBI := yes
+endif
+
+LPSOLVE_CFLAGS ?=
+LPSOLVE_LDFLAGS ?=
+ifneq '$(LPSOLVE_CFLAGS)$(LPSOLVE_LDFLAGS)' ''
+  USE_LPSOLVE := yes
+else
+  ifeq '$(shell if test -f /usr/lib/liblpsolve55.so; then echo "yes"; fi;)' 'yes'
+    LPSOLVE_LDFLAGS = -llpsolve55
+    USE_LPSOLVE := yes
+  endif
+endif
+
+PREFIX     ?= /usr/local
+INCLUDEDIR ?= include
+LIBDIR     ?= lib
+BINDIR     ?= bin
+
+.DEFAULT_GOAL := all
