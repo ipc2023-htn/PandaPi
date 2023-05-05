@@ -45,7 +45,7 @@ From: ubuntu:22.04
 	cd bin
 	cmake ..
 	make
-	mv pandaPIengine ..
+	mv pandaPIengine ../../..
 	cd ..
 
 	## remove files not needed to execute the planner
@@ -61,21 +61,21 @@ From: ubuntu:22.04
 	## PLANFILE=$3
 
 	## run your planner here
-	pandaPIparser $1 $2 temp.parsed
+	/planner/pandaPIparser $1 $2 temp.parsed
 	if [ ! -f temp.parsed ]; then
 		echo "Parsing failed."
 		exit 101
 	fi
 
-	pandaPIgrounder -q -i temp.parsed "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas"
-	# ./pandaPIgrounder -q -DE temp.parsed "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas"
+	/planner/pandaPIgrounder -q -i temp.parsed "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas"
+	# /planner/pandaPIgrounder -q -DE temp.parsed "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas"
 	rm temp.parsed
 	if [ ! -f "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" ]; then
 		echo "Grounding failed."
 		exit 102
 	fi
 
-	pandaPIengine "--heuristic=lama(lazy=false;ha=false;lm=lmc;useLMOrd=false;h=add;search=gbfs)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" &> $3
+	/planner/pandaPIengine "--heuristic=lama(lazy=false;ha=false;lm=lmc;useLMOrd=false;h=add;search=gbfs)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" >> $3
 
 
 ## Update the following fields with meta data about your submission.
