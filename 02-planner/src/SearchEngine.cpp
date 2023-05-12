@@ -563,10 +563,10 @@ int main(int argc, char *argv[]) {
                 fringe.ffAStarWeight = 1;
             }
             search.search(htn, tnI, timeL, suboptimalSearch, printPlan, heuristics, hLength, visi, fringe);
-            if (ihLM >= 0) {
-                hhLmOrdered *hlm = (hhLmOrdered*)heuristics[ihLM];
-                cout << "LM heuristic has proven " << hlm->deadends << " dead ends" << endl;
-            }
+            //if (ihLM >= 0) {
+            //    hhLmOrdered *hlm = (hhLmOrdered*)heuristics[ihLM];
+            //    cout << "LM heuristic has proven " << hlm->deadends << " dead ends" << endl;
+            //}
         } else {
 
             cout << "Search config:" << endl;
