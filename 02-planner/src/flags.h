@@ -44,7 +44,7 @@ typedef int tHVal;
 
 
 
-//#define TRACESOLUTION
+#define TRACESOLUTION
 
 
 // if we write the state space to file, we need to disable pretty much all optimisations ...
