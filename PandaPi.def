@@ -75,7 +75,9 @@ From: ubuntu:22.04
 		exit 102
 	fi
 
-	/planner/pandaPIengine "--heuristic=lama(lazy=false;ha=false;lm=lmc;useLMOrd=false;h=add;search=gbfs)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" >> $3
+	/planner/pandaPIengine "--heuristic=lama(lazy=false;ha=false;lm=lmc;useLMOrd=false;h=add;search=gbfs)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" >> panda.log
+
+	/planner/pandaPIparser -c panda.log $3
 
 
 ## Update the following fields with meta data about your submission.
