@@ -84,7 +84,7 @@ From: ubuntu:22.04
 ## Please use the same field names and use only one line for each value.
 %labels
 Name        PANDApro λ TO
-Description PANDA λ system using progression search with GBFS, rcAdd, and lmc
+Description PANDA λ system using progression search with GBFS, rcAdd, and ao landmarks
 Authors     Daniel Höller
 SupportsRecursion yes
 SupportsPartialOrder yes
