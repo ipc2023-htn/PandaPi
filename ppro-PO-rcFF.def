@@ -75,7 +75,7 @@ From: ubuntu:22.04
 		exit 102
 	fi
 
-	/planner/pandaPIengine --astarweight=2 --heuristic=rc2(ff) "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" >> panda.log
+	/planner/pandaPIengine --astarweight=2 --heuristic="rc2(ff)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" >> panda.log
 
 	/planner/pandaPIparser -c panda.log $3
 
