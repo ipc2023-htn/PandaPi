@@ -87,3 +87,9 @@ Authors     Daniel Höller
 SupportsRecursion yes
 SupportsPartialOrder yes
 SupportsOptimalPlanning no
+Track-TO-agile no
+Track-TO-satisficing no
+Track-TO-optimal no
+Track-PO-agile no
+Track-PO-satisficing yes
+Track-PO-optimal no
