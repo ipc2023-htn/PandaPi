@@ -75,7 +75,7 @@ From: ubuntu:22.04
 		exit 102
 	fi
 
-	/planner/pandaPIengine "--heuristic=lama(lazy=false;ha=false;lm=lmc;useLMOrd=false;h=add;search=gas)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" >> panda.log
+	/planner/pandaPIengine "--heuristic=lama(lazy=false;ha=false;lm=lmc;useLMOrd=false;h=ff;search=gas)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" >> panda.log
 
 	/planner/pandaPIparser -c panda.log $3
 
