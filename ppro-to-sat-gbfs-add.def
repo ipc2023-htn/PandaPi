@@ -75,14 +75,14 @@ From: ubuntu:22.04
 		exit 102
 	fi
 
-	/planner/pandaPIengine  -g none --heuristic="rc2(add)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" "$3" >> panda.log
+	/planner/pandaPIengine -g none --heuristic="rc2(add)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" "$3" >> panda.log
 
 
 ## Update the following fields with meta data about your submission.
 ## Please use the same field names and use only one line for each value.
 %labels
 Name        PANDApro
-Description PANDA λ system using progression search with GBFS, rcAdd, and ao landmarks
+Description
 Authors     Daniel Höller
 SupportsRecursion yes
 SupportsPartialOrder yes

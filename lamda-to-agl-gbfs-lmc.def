@@ -83,8 +83,8 @@ From: ubuntu:22.04
 ## Update the following fields with meta data about your submission.
 ## Please use the same field names and use only one line for each value.
 %labels
-Name        PANDApro λ TO
-Description PANDA λ system using progression search with GBFS, rcAdd, and lmc
+Name        PANDApro λ
+Description
 Authors     Daniel Höller
 SupportsRecursion yes
 SupportsPartialOrder yes
