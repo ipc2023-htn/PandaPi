@@ -82,7 +82,7 @@ From: ubuntu:22.04
 	# - not using LM-Cut landmarks
 	# - using AO landmarks
 	# - using operator counting constraints
-	/planner/pandaPIengine --astarweight=1 --heuristic="dof(type=lp;mode=optimal;lmclmc=none;andOrLM=full)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" >> panda.log
+	/planner/pandaPIengine -g action --astarweight=1 --heuristic="dof(type=lp;mode=optimal;lmclmc=none;andOrLM=full)" "$(basename "$1" .hddl)-$(basename "$2" .hddl).psas" >> panda.log
 
 	/planner/pandaPIparser -c panda.log $3
 
