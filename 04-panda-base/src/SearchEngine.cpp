@@ -226,6 +226,14 @@ int main(int argc, char *argv[]) {
     /* Read model */
     // todo: the correct value of maintainTaskRechability depends on the heuristic
     eMaintainTaskReachability reachability = mtrACTIONS;
+    string hStr = args_info.heuristic_arg[0];
+    if (hStr.rfind("dof(", 0) == 0) {
+        /* todo: hack!
+           - the dof heuristics need the model to maintain task reachability for all tasks (not only actions)
+           - however, the model needs this information and is initialized before the heuristics */
+        reachability = mtrALL;
+    }
+
 	bool trackContainedTasks = useTaskHash;
     Model* htn = new Model(trackContainedTasks, reachability, true, true);
 	htn->filename = inputFilename;
